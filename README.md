@@ -1,5 +1,5 @@
 # incidentservice
-A deployments repository to measure team performance
+An incident repository to measure team performance
 
 [![CircleCI](https://circleci.com/gh/awconstable/incidentservice.svg?style=shield)](https://circleci.com/gh/awconstable/incidentservice)
 ![CodeQL](https://github.com/awconstable/incidentservice/workflows/CodeQL/badge.svg)
