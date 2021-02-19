@@ -13,6 +13,34 @@ This application is a proof of concept, it is **not** production ready.
 A non-exhaustive list of known limitations:
 * No security whatsoever - anonymous users can easily delete or alter all data
 
+### Example Incident Upload
+
+```
+  POST http://localhost:8088/api/v1/incident
+  Accept: application/json
+  Cache-Control: no-cache
+  Content-Type: application/json
+
+  [
+      {
+        "incidentId": "i1",  
+        "incidentDesc": "incidentDesc i1",
+        "applicationId": "a1",  
+        "created": "2020-11-30T13:00:00.000+00:00",   
+        "resolved": "2020-11-30T14:00:00.000+00:00",
+        "source": "test"
+      },
+      {
+        "incidentId": "i2",  
+        "incidentDesc": "incidentDesc i2",
+        "applicationId": "a2",  
+        "created": "2020-11-30T13:00:00.000+00:00",   
+        "resolved": "2020-11-30T14:00:00.000+00:00",
+        "source": "test"
+      }
+  ]
+```
+
 ### Run app as a Docker container
 
 *See https://github.com/docker-library/openjdk/issues/135 as to why spring.boot.mongodb.. env vars don't work*
