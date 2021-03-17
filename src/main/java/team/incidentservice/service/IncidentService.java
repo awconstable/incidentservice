@@ -15,6 +15,8 @@ public interface IncidentService
 
         List<Incident> list();
         
+        String delete(String id);
+        
         List<Incident> listAllForApplication(String applicationId);
 
         List<Incident> listAllForApplication(String applicationId, Date reportingDate);

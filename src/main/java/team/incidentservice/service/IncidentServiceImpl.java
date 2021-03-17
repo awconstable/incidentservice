@@ -66,6 +66,14 @@ public class IncidentServiceImpl implements IncidentService
         }
 
     @Override
+    public String delete(String id)
+        {
+        Optional<Incident> incident = get(id);
+        incident.ifPresent(incidentRepo::delete);
+        return id;
+        }
+
+    @Override
     public List<Incident> listAllForApplication(String applicationId)
         {
         return incidentRepo.findByApplicationId(applicationId);

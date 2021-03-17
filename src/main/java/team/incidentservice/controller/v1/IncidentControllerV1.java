@@ -72,6 +72,11 @@ public class IncidentControllerV1
             return incidentService.get(id);
         }
 
+        @DeleteMapping("/{id}")
+        @ResponseStatus(HttpStatus.OK)
+        @ApiOperation(value = "Delete a specific incident specified by it's id")
+        public String delete(@PathVariable String id) { return incidentService.delete(id); }
+    
         @GetMapping("/application/{id}")
         @ResponseStatus(HttpStatus.OK)
         @ApiOperation(value = "Get all incidents associated to an application id", response = Incident.class)

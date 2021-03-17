@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import team.incidentservice.model.*;
 import team.incidentservice.service.IncidentService;
 
@@ -159,6 +160,18 @@ class IncidentControllerV1Test
         String content = result.getResponse().getContentAsString();
         assertThat(content, is(equalTo("{\"incidentId\":\"i1\",\"incidentDesc\":\"incident 1\",\"applicationId\":\"a1\",\"created\":\"2020-10-10T00:00:00.000+00:00\",\"resolved\":\"2020-10-10T00:00:00.000+00:00\",\"source\":\"test\",\"mttrSeconds\":0,\"mttrPerfLevel\":null}")));
         verify(mockIncidentService, times(1)).get(id);
+        }
+
+    @Test
+    void delete() throws Exception
+        {
+        when(mockIncidentService.delete("id123")).thenReturn("id123");
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/incident/{id}", "id123")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andReturn();
+        String content = result.getResponse().getContentAsString();
+        assertThat(content, is(equalTo("id123")));
+        verify(mockIncidentService, times(1)).delete("id123");
         }
 
     @Test

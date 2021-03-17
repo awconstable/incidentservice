@@ -15,11 +15,12 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.when;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 class IncidentServiceImplTest
@@ -146,5 +147,17 @@ class IncidentServiceImplTest
         List<Incident> deployList = incidentService.listAllForApplication(appId, dateOf(2020, 3, 10, 0, 0, 0));
 
         assertThat(deployList.size(), equalTo(2));
+        }
+
+    @Test
+    void checkDelete()
+        {
+        Incident i1 =  setupIncident(2021, 2021, 2, 2, 4, 4, 8, 10, 0, 0);
+        when(mockincidentRepo.findById("id123"))
+            .thenReturn(Optional.of(i1));
+        String id = incidentService.delete("id123");
+        assertThat(id, is(equalTo("id123")));
+        verify(mockincidentRepo, times(1)).findById("id123");
+        verify(mockincidentRepo, times(1)).delete(i1);
         }
     }
