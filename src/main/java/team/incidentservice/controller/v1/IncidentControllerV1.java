@@ -1,5 +1,8 @@
 package team.incidentservice.controller.v1;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -20,6 +23,7 @@ import java.util.*;
 @Validated
 @RestController
 @RequestMapping(value = "/api/v1/incident", produces = "application/json")
+@Api
 public class IncidentControllerV1
     {
     
@@ -33,6 +37,7 @@ public class IncidentControllerV1
 
         @PostMapping("")
         @ResponseStatus(HttpStatus.CREATED)
+        @ApiOperation(value = "Store a list of incidents", notes = "Store a list of incidents", response = Incident.class, responseContainer = "List")
         public List<Incident> store(@RequestBody @NotEmpty(message = "Input incident list cannot be empty.") List<@Valid Incident> incidents){
                 List<Incident> output = new ArrayList<>();
                 incidents.forEach(i -> output.add(incidentService.store(i)));
@@ -55,32 +60,37 @@ public class IncidentControllerV1
     
         @GetMapping("")
         @ResponseStatus(HttpStatus.OK)
+        @ApiOperation(value = "List all incidents", notes = "List all incidents", response = Incident.class, responseContainer = "List")
         public List<Incident> list(){
             return incidentService.list();
         }
 
         @GetMapping("/{id}")
         @ResponseStatus(HttpStatus.OK)
-        public Optional<Incident> show(@PathVariable String id){
+        @ApiOperation(value = "Get a specific incident specified by it's id", response = Incident.class)
+        public Optional<Incident> show(@PathVariable @ApiParam(value = "The incident id", required = true) String id){
             return incidentService.get(id);
         }
 
         @GetMapping("/application/{id}")
         @ResponseStatus(HttpStatus.OK)
-        public List<Incident> listForApp(@PathVariable String id){
+        @ApiOperation(value = "Get all incidents associated to an application id", response = Incident.class)
+        public List<Incident> listForApp(@PathVariable @ApiParam(value = "The application id", required = true) String id){
             return incidentService.listAllForApplication(id);
         }
 
         @GetMapping("/application/{id}/date/{date}")
         @ResponseStatus(HttpStatus.OK)
-        public List<Incident> listForAppAndDate(@PathVariable String id, @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date){
+        @ApiOperation(value = "Get all incidents associated to an application id for a specific date", response = Incident.class)
+        public List<Incident> listForAppAndDate(@PathVariable @ApiParam(value = "The application id", required = true) String id, @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @ApiParam(value = "The incident date in ISO Date format YYYY-MM-dd", required = true) LocalDate date){
             Date reportingDate = Date.from(date.atStartOfDay(ZoneOffset.UTC).toInstant());
             return incidentService.listAllForApplication(id, reportingDate);
         }
 
         @GetMapping("/application/{id}/mttr")
         @ResponseStatus(HttpStatus.OK)
-        public MTTR calculateMTTR(@PathVariable String id){
+        @ApiOperation(value = "Calculate mttr over the last 90 days for an application", response = Incident.class)
+        public MTTR calculateMTTR(@PathVariable @ApiParam(value = "The application id", required = true) String id){
             ZonedDateTime date = LocalDate.now().minusDays(1).atStartOfDay(ZoneOffset.UTC);        
             Date reportingDate = Date.from(date.toInstant());
             return incidentService.calculateMTTR(id, reportingDate);
@@ -88,7 +98,8 @@ public class IncidentControllerV1
 
         @GetMapping("/application/{id}/mttr/{date}")
         @ResponseStatus(HttpStatus.OK)
-        public MTTR calculateMTTR(@PathVariable String id, @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date){
+        @ApiOperation(value = "Calculate mttr over 90 days for an application from a given date", response = Incident.class)
+        public MTTR calculateMTTR(@PathVariable @ApiParam(value = "The application id", required = true) String id, @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @ApiParam(value = "The incident date in ISO Date format YYYY-MM-dd", required = true) LocalDate date){
             Date reportingDate = Date.from(date.atStartOfDay(ZoneOffset.UTC).toInstant());
             return incidentService.calculateMTTR(id, reportingDate);
         }
