@@ -10,11 +10,11 @@ public class MTTR
     private final String applicationId;
     @JsonFormat(pattern="yyyy-MM-dd")
     private final Date reportingDate;
-    private final Integer meanTimeToRecoverSeconds;
+    private final long meanTimeToRecoverSeconds;
     private final Integer incidentCount;
     private final DORALevel doraLevel;
 
-    public MTTR(String applicationId, Date reportingDate, Integer meanTimeToRecoverSeconds, Integer incidentCount, DORALevel doraLevel)
+    public MTTR(String applicationId, Date reportingDate, long meanTimeToRecoverSeconds, Integer incidentCount, DORALevel doraLevel)
         {
         this.applicationId = applicationId;
         this.reportingDate = reportingDate;
@@ -43,7 +43,7 @@ public class MTTR
         return doraLevel;
         }
 
-    public Integer getMeanTimeToRecoverSeconds()
+    public long getMeanTimeToRecoverSeconds()
         {
         return meanTimeToRecoverSeconds;
         }

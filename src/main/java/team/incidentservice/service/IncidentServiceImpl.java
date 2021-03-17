@@ -80,16 +80,31 @@ public class IncidentServiceImpl implements IncidentService
     @Override
     public MTTR calculateMTTR(String applicationId, Date reportingDate)
         {
-        //TODO implement
-        return null;
+        Date startDate = getStartDate(reportingDate, 89);
+        Date endDate = getEndDate(reportingDate);
+        List<Incident> incidents = incidentRepo
+            .findByApplicationIdAndCreatedBetweenOrderByCreated(applicationId, startDate, endDate);
+        //No data, return unknown performance level
+        if(incidents.size() == 0){
+        return new MTTR(applicationId, reportingDate, 0,0, DORALevel.UNKNOWN);
+        }
+        ArrayList<Long> cMttrTimes = new ArrayList<>();
+        incidents.forEach( 
+            incident -> cMttrTimes.add(incident.getMttrSeconds())
+        );
+        long mttrSecs = findAverageUsingStream(cMttrTimes.toArray(new Long[0]));
+        DORALevel mttrPerfLevel = findDORAPerfLevel(mttrSecs);
+        return new MTTR(applicationId, reportingDate, mttrSecs, incidents.size(), mttrPerfLevel);
         }
 
-    private Date getStartDate(Date reportingDate, Integer minusDays){
-        ZonedDateTime startDate = ZonedDateTime.ofInstant(reportingDate.toInstant(), ZoneOffset.UTC).minusDays(minusDays);
-        return Date.from(startDate.toInstant());
-    }
+    private Date getStartDate(Date reportingDate, Integer minusDays)
+        {
+            ZonedDateTime startDate = ZonedDateTime.ofInstant(reportingDate.toInstant(), ZoneOffset.UTC).minusDays(minusDays);
+            return Date.from(startDate.toInstant());
+        }
     
-    private Date getEndDate(Date reportingDate){
-        return Date.from(ZonedDateTime.ofInstant(reportingDate.toInstant(), ZoneOffset.UTC).plusDays(1).toInstant());
-    }
+    private Date getEndDate(Date reportingDate)
+        {
+            return Date.from(ZonedDateTime.ofInstant(reportingDate.toInstant(), ZoneOffset.UTC).plusDays(1).toInstant());
+        }
     }
