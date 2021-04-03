@@ -1,8 +1,11 @@
 package team.incidentservice.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import team.incidentservice.hierarchy.repo.HierarchyClient;
 import team.incidentservice.model.DORALevel;
 import team.incidentservice.model.Incident;
 import team.incidentservice.model.MTTR;
@@ -15,13 +18,16 @@ import java.util.*;
 @Service
 public class IncidentServiceImpl implements IncidentService
     {
+    private static final Logger log = LoggerFactory.getLogger(IncidentServiceImpl.class);
 
     private final IncidentRepo incidentRepo;
+    private final HierarchyClient hierarchyClient;
 
     @Autowired
-    public IncidentServiceImpl(IncidentRepo incidentRepo)
+    public IncidentServiceImpl(IncidentRepo incidentRepo, HierarchyClient hierarchyClient)
         {
         this.incidentRepo = incidentRepo;
+        this.hierarchyClient = hierarchyClient;
         }
 
     private static long findAverageUsingStream(Long[] array) {
@@ -77,6 +83,14 @@ public class IncidentServiceImpl implements IncidentService
     public List<Incident> listAllForApplication(String applicationId)
         {
         return incidentRepo.findByApplicationId(applicationId);
+        }
+
+    @Override
+    public List<Incident> listAllForHierarchy(String applicationId)
+        {
+        log.info("Loading all incidents in the hierarchy starting at applicationId {}", applicationId);
+        Collection<String> appIds = hierarchyClient.findChildIds(applicationId);
+        return incidentRepo.findByApplicationIdInOrderByCreatedDesc(appIds);
         }
 
     @Override

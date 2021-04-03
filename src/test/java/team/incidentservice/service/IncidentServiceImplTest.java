@@ -7,15 +7,13 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import team.incidentservice.hierarchy.repo.HierarchyClient;
 import team.incidentservice.model.*;
 import team.incidentservice.repo.IncidentRepo;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -29,16 +27,20 @@ class IncidentServiceImplTest
     private IncidentService incidentService;
     @Autowired
     private IncidentRepo mockincidentRepo;
+    @Autowired
+    private HierarchyClient mockHierarchyClient;
 
     @TestConfiguration
     static class DeploymentServiceImplTestContextConfiguration
         {
         @MockBean
         private IncidentRepo mockincidentRepo;
+        @MockBean
+        private HierarchyClient mockHierarchyClient;
         @Bean
         public IncidentService incidentService()
             {
-            return new IncidentServiceImpl(mockincidentRepo);
+            return new IncidentServiceImpl(mockincidentRepo, mockHierarchyClient);
             }
         }
     
@@ -116,13 +118,13 @@ class IncidentServiceImplTest
         {
         Incident d1 =  setupIncident(2021, 2021, 2, 2, 4, 4, 8, 10, 0, 0);
         Incident d2 =  setupIncident(2021, 2021, 2, 2, 4, 4, 8, 10, 0, 0);
-        List<Incident> deploys = new ArrayList<>();
-        deploys.add(d1);
-        deploys.add(d2);
+        List<Incident> incidents = new ArrayList<>();
+        incidents.add(d1);
+        incidents.add(d2);
         String appId = "app1";
         when(mockincidentRepo.findByApplicationId
             (appId))
-            .thenReturn(deploys);
+            .thenReturn(incidents);
         
         List<Incident> deployList = incidentService.listAllForApplication(appId);
         
@@ -130,19 +132,39 @@ class IncidentServiceImplTest
         }
 
     @Test
+    void checkListHierarchy()
+        {
+        Incident d1 =  setupIncident(2021, 2021, 2, 2, 4, 4, 8, 10, 0, 0);
+        Incident d2 =  setupIncident(2021, 2021, 2, 2, 4, 4, 8, 10, 0, 0);
+        List<Incident> incidents = new ArrayList<>();
+        incidents.add(d1);
+        incidents.add(d2);
+        String appId = "app1";
+        when(mockHierarchyClient.findChildIds("a1")).thenReturn(Arrays.asList("a1", "a2"));
+        when(mockincidentRepo.findByApplicationIdInOrderByCreatedDesc(anyCollection()))
+            .thenReturn(incidents);
+
+        List<Incident> incidentList = incidentService.listAllForHierarchy(appId);
+        
+        verify(mockHierarchyClient, times(1)).findChildIds("app1");
+        verify(mockincidentRepo, times(1)).findByApplicationIdInOrderByCreatedDesc(anyCollection());
+        assertThat(incidentList.size(), equalTo(2));
+        }
+
+    @Test
     void checkListAllWithDate()
         {
         Incident d1 =  setupIncident(2021, 2021, 2, 2, 4, 4, 8, 10, 0, 0);
         Incident d2 =  setupIncident(2021, 2021, 2, 2, 4, 4, 8, 10, 0, 0);
-        List<Incident> deploys = new ArrayList<>();
-        deploys.add(d1);
-        deploys.add(d2);
+        List<Incident> incidents = new ArrayList<>();
+        incidents.add(d1);
+        incidents.add(d2);
         String appId = "app1";
         when(mockincidentRepo.findByApplicationIdAndCreatedBetweenOrderByCreated
             (appId,
                 dateOf(2020, 3, 10, 0, 0, 0),
                 dateOf(2020, 3, 11, 0, 0, 0)))
-            .thenReturn(deploys);
+            .thenReturn(incidents);
 
         List<Incident> deployList = incidentService.listAllForApplication(appId, dateOf(2020, 3, 10, 0, 0, 0));
 

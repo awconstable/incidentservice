@@ -19,6 +19,8 @@ public interface IncidentService
         
         List<Incident> listAllForApplication(String applicationId);
 
+        List<Incident> listAllForHierarchy(String applicationId);
+
         List<Incident> listAllForApplication(String applicationId, Date reportingDate);
         
         MTTR calculateMTTR(String applicationId, Date reportingDate);

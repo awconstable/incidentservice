@@ -195,6 +195,28 @@ class IncidentControllerV1Test
         assertThat(content, is(equalTo("[{\"incidentId\":\"i1\",\"incidentDesc\":\"incident 1\",\"applicationId\":\"id123\",\"created\":\"2020-10-10T00:00:00.000+00:00\",\"resolved\":\"2020-10-10T00:00:00.000+00:00\",\"source\":\"test\",\"mttrSeconds\":0,\"mttrPerfLevel\":null},{\"incidentId\":\"i2\",\"incidentDesc\":\"incident 2\",\"applicationId\":\"id123\",\"created\":\"2020-10-10T00:00:00.000+00:00\",\"resolved\":\"2020-10-10T00:00:00.000+00:00\",\"source\":\"test\",\"mttrSeconds\":0,\"mttrPerfLevel\":null}]")));
         verify(mockIncidentService, times(1)).listAllForApplication(appId);
         }
+
+    @Test
+    void listForHierarchy() throws Exception
+        {
+        ZonedDateTime reportingDate = LocalDate.of(2020, 10, 10).atStartOfDay(ZoneId.of("UTC"));
+        String appId = "id123";
+        Incident i1 = new Incident("i1", "incident 1", appId, Date.from(reportingDate.toInstant()), Date.from(reportingDate.toInstant()), "test");
+        Incident i2 = new Incident("i2", "incident 2", appId, Date.from(reportingDate.toInstant()), Date.from(reportingDate.toInstant()), "test");
+
+        List<Incident> incidents = new ArrayList<>();
+        incidents.add(i1);
+        incidents.add(i2);
+
+        when(mockIncidentService.listAllForHierarchy(appId)).thenReturn(incidents);
+
+        MvcResult result = mockMvc.perform(get("/api/v1/incident/hierarchy/" + appId)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andReturn();
+        String content = result.getResponse().getContentAsString();
+        assertThat(content, is(equalTo("[{\"incidentId\":\"i1\",\"incidentDesc\":\"incident 1\",\"applicationId\":\"id123\",\"created\":\"2020-10-10T00:00:00.000+00:00\",\"resolved\":\"2020-10-10T00:00:00.000+00:00\",\"source\":\"test\",\"mttrSeconds\":0,\"mttrPerfLevel\":null},{\"incidentId\":\"i2\",\"incidentDesc\":\"incident 2\",\"applicationId\":\"id123\",\"created\":\"2020-10-10T00:00:00.000+00:00\",\"resolved\":\"2020-10-10T00:00:00.000+00:00\",\"source\":\"test\",\"mttrSeconds\":0,\"mttrPerfLevel\":null}]")));
+        verify(mockIncidentService, times(1)).listAllForHierarchy(appId);
+        }
     
     @Test
     void listByAppAndDate() throws Exception

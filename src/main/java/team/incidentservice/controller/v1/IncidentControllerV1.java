@@ -79,14 +79,21 @@ public class IncidentControllerV1
     
         @GetMapping("/application/{id}")
         @ResponseStatus(HttpStatus.OK)
-        @ApiOperation(value = "Get all incidents associated to an application id", response = Incident.class)
+        @ApiOperation(value = "Get all incidents associated to an application id", response = Incident.class, responseContainer = "List")
         public List<Incident> listForApp(@PathVariable @ApiParam(value = "The application id", required = true) String id){
             return incidentService.listAllForApplication(id);
         }
 
+        @GetMapping("/hierarchy/{id}")
+        @ResponseStatus(HttpStatus.OK)
+        @ApiOperation(value = "Get all incidents associated with a hierarchy", response = Incident.class, responseContainer = "List")
+        public List<Incident> listForHierarchy(@PathVariable @ApiParam(value = "The application id", required = true) String id){
+            return incidentService.listAllForHierarchy(id);
+        }
+
         @GetMapping("/application/{id}/date/{date}")
         @ResponseStatus(HttpStatus.OK)
-        @ApiOperation(value = "Get all incidents associated to an application id for a specific date", response = Incident.class)
+        @ApiOperation(value = "Get all incidents associated to an application id for a specific date", response = Incident.class, responseContainer = "List")
         public List<Incident> listForAppAndDate(@PathVariable @ApiParam(value = "The application id", required = true) String id, @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @ApiParam(value = "The incident date in ISO Date format YYYY-MM-dd", required = true) LocalDate date){
             Date reportingDate = Date.from(date.atStartOfDay(ZoneOffset.UTC).toInstant());
             return incidentService.listAllForApplication(id, reportingDate);

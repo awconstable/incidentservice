@@ -32,6 +32,8 @@ class IncidentRepoTest extends MongoDBContainerTest
         repo.save(i2);
         Incident i3 = new Incident("i3", "incident 3", "a2", Date.from(Instant.now()), Date.from(Instant.now()),"test");
         repo.save(i3);
+        Incident i4 = new Incident("i4", "incident 4", "a3", Date.from(Instant.now()), Date.from(Instant.now()),"test");
+        repo.save(i4);
         }
 
     @AfterEach
@@ -64,5 +66,12 @@ class IncidentRepoTest extends MongoDBContainerTest
             Date endDate = Date.from(endDateTime.toInstant(ZoneOffset.UTC));
             List<Incident> deploys = repo.findByApplicationIdAndCreatedBetweenOrderByCreated("a1", startDate, endDate);
             assertThat(deploys.size(), is(equalTo(2)));
+        }
+
+    @Test
+    public void getAllAppsUsingIn()
+        {
+        List<Incident> incidents = repo.findByApplicationIdInOrderByCreatedDesc(Arrays.asList("a1", "a2"));
+        assertThat(incidents.size(), is(equalTo(3)));
         }
     }
