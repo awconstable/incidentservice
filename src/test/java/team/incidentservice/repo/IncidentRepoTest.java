@@ -71,7 +71,7 @@ class IncidentRepoTest extends MongoDBContainerTest
     @Test
     public void getAllAppsUsingIn()
         {
-        List<Incident> incidents = repo.findByApplicationIdInOrderByCreatedDesc(Arrays.asList("a1", "a2"));
+        List<Incident> incidents = repo.findByApplicationIdInOrderByResolvedDesc(Arrays.asList("a1", "a2"));
         assertThat(incidents.size(), is(equalTo(3)));
         }
     }

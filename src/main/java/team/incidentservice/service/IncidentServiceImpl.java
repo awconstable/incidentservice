@@ -90,7 +90,7 @@ public class IncidentServiceImpl implements IncidentService
         {
         log.info("Loading all incidents in the hierarchy starting at applicationId {}", applicationId);
         Collection<String> appIds = hierarchyClient.findChildIds(applicationId);
-        return incidentRepo.findByApplicationIdInOrderByCreatedDesc(appIds);
+        return incidentRepo.findByApplicationIdInOrderByResolvedDesc(appIds);
         }
 
     @Override

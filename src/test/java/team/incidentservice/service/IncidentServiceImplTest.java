@@ -141,13 +141,13 @@ class IncidentServiceImplTest
         incidents.add(d2);
         String appId = "app1";
         when(mockHierarchyClient.findChildIds("a1")).thenReturn(Arrays.asList("a1", "a2"));
-        when(mockincidentRepo.findByApplicationIdInOrderByCreatedDesc(anyCollection()))
+        when(mockincidentRepo.findByApplicationIdInOrderByResolvedDesc(anyCollection()))
             .thenReturn(incidents);
 
         List<Incident> incidentList = incidentService.listAllForHierarchy(appId);
         
         verify(mockHierarchyClient, times(1)).findChildIds("app1");
-        verify(mockincidentRepo, times(1)).findByApplicationIdInOrderByCreatedDesc(anyCollection());
+        verify(mockincidentRepo, times(1)).findByApplicationIdInOrderByResolvedDesc(anyCollection());
         assertThat(incidentList.size(), equalTo(2));
         }
 

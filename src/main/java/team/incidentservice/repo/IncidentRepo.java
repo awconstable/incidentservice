@@ -13,7 +13,7 @@ public interface IncidentRepo extends MongoRepository<Incident, String>
     {
         List<Incident> findByApplicationId(String applicationId);
 
-        List<Incident> findByApplicationIdInOrderByCreatedDesc(Collection<String> applicationIds);
+        List<Incident> findByApplicationIdInOrderByResolvedDesc(Collection<String> applicationIds);
         
         List<Incident> findByApplicationIdAndCreatedBetweenOrderByCreated(String applicationId, Date start, Date end);
     }
