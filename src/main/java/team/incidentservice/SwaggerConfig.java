@@ -12,7 +12,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import static springfox.documentation.builders.PathSelectors.regex;
 
 @Configuration
-@EnableSwagger2
 public class SwaggerConfig implements WebMvcConfigurer
     {
     @Bean
@@ -22,12 +21,5 @@ public class SwaggerConfig implements WebMvcConfigurer
                 .select().apis(RequestHandlerSelectors.basePackage("team.incidentservice.controller"))
                 .paths(regex("/api.*"))
                 .build();
-        }
-
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry)
-        {
-        registry.addResourceHandler("swagger-ui.html")
-                .addResourceLocations("classpath:/META-INF/resources/");
         }
 }
